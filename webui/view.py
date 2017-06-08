@@ -259,7 +259,7 @@ class SqlReviewGetStruct(BaseHandler):
             db_type = "O"
         else:
             db_type = "mysql"
-        if flag.upper() not in ["OBJ", "SQLPLAN", "SQLSTAT", "SQLTEXT"]:
+        if flag.upper() not in ["OBJ", "SQLPLAN", "SQLSTAT", "TEXT"]:
             raise APIError(u"规则类型不正确", 30058)
         records = self.mongo_client.get_collection("rule").find(
             {"rule_type": flag.upper(), "db_type": db_type}
@@ -505,9 +505,8 @@ class SqlReviewTaskRuleDetailInfo(BaseHandler):
                 for data in rule_info["input_parms"]:
                     title.append([data["parm_value"], data["parm_desc"]])
                 for data in results[rule_name]["records"]:
-                    temp = []
-                    temp.extend(data)
-                    records.append(temp)
+                    if data not in records:
+                        records.append(data)
             flag = rule_info["rule_type"]
         elif rule_info["rule_type"] in ["SQLPLAN", "SQLSTAT"]:
             for key in results[rule_name].keys():
